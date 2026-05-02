@@ -52,18 +52,16 @@
     <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"></div>
   </div>
 
-  <!-- Upload Modal -->
+  <!-- Upload Modal (same as before) -->
   <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
     <div class="bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-md mx-4 p-8">
       <h2 class="text-2xl font-bold mb-6">Upload Asset to VerseKit</h2>
       
-      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip,.psd">
+      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
       
-      <div id="dropZone" 
-           class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer transition-colors">
+      <div id="dropZone" class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer transition-colors">
         <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
         <p class="text-gray-300">Drop file here or click to browse</p>
-        <p class="text-xs text-gray-500 mt-2">PNG, JPG, SVG, PDF, ZIP supported</p>
       </div>
 
       <div id="previewArea" class="hidden mt-6">
@@ -79,21 +77,17 @@
       </div>
 
       <div class="flex gap-4 mt-8">
-        <button onclick="hideUploadModal()" 
-                class="flex-1 py-4 border border-gray-600 rounded-2xl hover:bg-gray-800">Cancel</button>
-        <button onclick="startUpload()" id="uploadBtn"
-                class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold disabled:opacity-50">
-          Upload Asset
-        </button>
+        <button onclick="hideUploadModal()" class="flex-1 py-4 border border-gray-600 rounded-2xl hover:bg-gray-800">Cancel</button>
+        <button onclick="startUpload()" id="uploadBtn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold disabled:opacity-50">Upload Asset</button>
       </div>
     </div>
   </div>
 
   <script>
     let assets = [
-      { id: 1, title: "Verse Primary Logo", category: "logo", type: "PNG + SVG", size: "2.4 MB", img: "https://picsum.photos/id/237/400/300" },
-      { id: 2, title: "Verse Dark Logo Pack", category: "logo", type: "PNG + SVG", size: "4.1 MB", img: "https://picsum.photos/id/201/400/300" },
-      { id: 3, title: "Twitter Header Template", category: "banner", type: "PSD + PNG", size: "12 MB", img: "https://picsum.photos/id/180/400/300" },
+      { id: 1, title: "Verse Primary Logo", category: "logo", type: "PNG + SVG", size: "2.4 MB", img: "https://picsum.photos/id/237/800/600" },
+      { id: 2, title: "Verse Dark Logo Pack", category: "logo", type: "PNG + SVG", size: "4.1 MB", img: "https://picsum.photos/id/201/800/600" },
+      { id: 3, title: "Twitter Header Template", category: "banner", type: "PNG", size: "12 MB", img: "https://picsum.photos/id/180/800/600" },
     ];
 
     let currentFile = null;
@@ -109,10 +103,12 @@
           <img src="${asset.img}" class="w-full h-52 object-cover">
           <div class="p-6">
             <h3 class="font-semibold text-white text-lg mb-1">${asset.title}</h3>
-            <p class="text-xs text-emerald-400 uppercase tracking-widest">${asset.category}</p>
+            <p class="text-xs text-emerald-400 uppercase">${asset.category}</p>
             <p class="text-sm text-gray-400 mt-4">${asset.type} • ${asset.size}</p>
-            <button onclick="downloadAsset('${asset.title}')" 
-                    class="mt-6 w-full py-4 bg-gray-800 hover:bg-emerald-600 rounded-2xl text-sm font-medium transition-colors">
+            
+            <button onclick="downloadAsset('${asset.title}', '${asset.img}')" 
+                    class="mt-6 w-full py-4 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-medium transition-colors flex items-center justify-center gap-2">
+              <i class="fas fa-download"></i>
               Download
             </button>
           </div>
@@ -121,11 +117,20 @@
       });
     }
 
-    function downloadAsset(name) {
-      alert(`Downloading: ${name}`);
+    // Real Download Function
+    function downloadAsset(filename, imageUrl) {
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = filename.replace(/\s+/g, '-') + '.png'; // You can improve extension logic later
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Optional: show feedback
+      // alert(`Downloading ${filename}...`);
     }
 
-    // Modal Controls
+    // Upload Modal & Logic (kept from previous version)
     function showUploadModal() {
       document.getElementById('uploadModal').classList.remove('hidden');
       resetModal();
@@ -143,115 +148,92 @@
       document.getElementById('uploadBtn').disabled = false;
     }
 
-    // File Handling
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
 
     dropZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFileSelect);
+    fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
-    dropZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      dropZone.style.borderColor = '#10b981';
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.style.borderColor = '#4b5563';
-    });
-
+    // Drag & Drop
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = '#10b981'; });
+    dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = '#4b5563');
     dropZone.addEventListener('drop', e => {
       e.preventDefault();
       dropZone.style.borderColor = '#4b5563';
       handleFiles(e.dataTransfer.files);
     });
 
-    function handleFileSelect(e) {
-      handleFiles(e.target.files);
-    }
-
     function handleFiles(files) {
       if (files.length > 0) {
         currentFile = files[0];
         document.getElementById('fileName').textContent = currentFile.name;
-        
-        const previewArea = document.getElementById('previewArea');
-        previewArea.classList.remove('hidden');
+        document.getElementById('previewArea').classList.remove('hidden');
 
         if (currentFile.type.startsWith('image/')) {
           const reader = new FileReader();
-          reader.onload = function(e) {
-            document.getElementById('previewImage').src = e.target.result;
-          };
+          reader.onload = e => document.getElementById('previewImage').src = e.target.result;
           reader.readAsDataURL(currentFile);
         }
       }
     }
 
     function startUpload() {
-      if (!currentFile) {
-        alert("Please select a file first!");
-        return;
-      }
+      if (!currentFile) return alert("Please select a file first!");
 
       const uploadBtn = document.getElementById('uploadBtn');
       const progressContainer = document.getElementById('progressContainer');
-      
       uploadBtn.disabled = true;
       progressContainer.classList.remove('hidden');
 
       let progress = 0;
-      const progressBar = document.getElementById('progressBar');
-      const progressText = document.getElementById('progressText');
-
       const interval = setInterval(() => {
-        progress += Math.random() * 25;
+        progress += Math.random() * 30;
         if (progress > 100) progress = 100;
-        
-        progressBar.style.width = progress + '%';
-        progressText.textContent = `Uploading... ${Math.round(progress)}%`;
+
+        document.getElementById('progressBar').style.width = progress + '%';
+        document.getElementById('progressText').textContent = `Uploading... ${Math.round(progress)}%`;
 
         if (progress >= 100) {
           clearInterval(interval);
           finishUpload();
         }
-      }, 300);
+      }, 250);
     }
 
     function finishUpload() {
       const newAsset = {
         id: Date.now(),
         title: currentFile.name.split('.')[0] || "New Asset",
-        category: "banner", // You can improve this later
+        category: "banner",
         type: currentFile.name.split('.').pop().toUpperCase(),
         size: (currentFile.size / (1024*1024)).toFixed(1) + " MB",
-        img: currentFile.type.startsWith('image/') ? URL.createObjectURL(currentFile) : "https://picsum.photos/id/180/400/300"
+        img: currentFile.type.startsWith('image/') ? URL.createObjectURL(currentFile) : "https://picsum.photos/id/180/800/600"
       };
 
       assets.unshift(newAsset);
       renderAssets(assets);
-
+      
       setTimeout(() => {
-        alert("✅ Asset uploaded successfully and added to the gallery!");
+        alert("✅ Asset uploaded and added to VerseKit!");
         hideUploadModal();
-      }, 500);
+      }, 400);
     }
 
     // Filters
-    document.getElementById('searchInput').addEventListener('input', filterAssets);
-    document.getElementById('categoryFilter').addEventListener('change', filterAssets);
-
     function filterAssets() {
       const term = document.getElementById('searchInput').value.toLowerCase().trim();
       const cat = document.getElementById('categoryFilter').value;
 
       const filtered = assets.filter(a => 
-        (!term || a.title.toLowerCase().includes(term)) &&
-        (!cat || a.category === cat)
+        (!term || a.title.toLowerCase().includes(term)) && (!cat || a.category === cat)
       );
       renderAssets(filtered);
     }
 
-    // Initial load
+    document.getElementById('searchInput').addEventListener('input', filterAssets);
+    document.getElementById('categoryFilter').addEventListener('change', filterAssets);
+
+    // Initial render
     renderAssets(assets);
   </script>
 </body>
