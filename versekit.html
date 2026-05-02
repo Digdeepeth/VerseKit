@@ -15,10 +15,6 @@
       transform: translateY(-8px);
       box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
     }
-    footer a:hover {
-      color: #10b981;
-      transform: translateY(-2px);
-    }
   </style>
 </head>
 <body class="bg-gray-950 text-gray-200 min-h-screen flex flex-col">
@@ -31,7 +27,7 @@
       </div>
       
       <button onclick="showUploadModal()" 
-              class="bg-emerald-600 hover:bg-emerald-500 px-8 py-4 rounded-2xl font-semibold flex items-center gap-3 transition-all active:scale-95">
+              class="bg-emerald-600 hover:bg-emerald-500 px-8 py-4 rounded-2xl font-semibold flex items-center gap-3 transition-all">
         <i class="fas fa-upload"></i>
         <span>Upload New Asset</span>
       </button>
@@ -57,50 +53,32 @@
     <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"></div>
   </div>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 border-t border-gray-800 py-10 mt-auto">
+  <!-- Footer with Social Icons in same container -->
+  <footer class="bg-gray-900 border-t border-gray-800 py-8">
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="text-center md:text-left">
-          <p class="text-white font-medium">VerseKit</p>
-          <p class="text-gray-500 text-sm">Built for the Verse Community • Lagos, Nigeria</p>
+        <!-- Branding -->
+        <div>
+          <p class="text-white font-medium text-lg">VerseKit</p>
+          <p class="text-gray-500 text-sm">Built for the Verse Community</p>
         </div>
 
-        <div class="flex gap-6 text-2xl text-gray-400">
-          <a href="#" class="hover:text-white transition-colors"><i class="fab fa-x-twitter"></i></a>
-          <a href="#" class="hover:text-white transition-colors"><i class="fab fa-telegram"></i></a>
-          <a href="#" class="hover:text-white transition-colors"><i class="fab fa-discord"></i></a>
-          <a href="#" class="hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+        <!-- Social Icons -->
+        <div class="flex gap-8 text-2xl text-gray-400">
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-telegram"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-discord"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-github"></i></a>
         </div>
 
+        <!-- Copyright -->
         <div class="text-gray-500 text-sm text-center md:text-right">
-          © 2026 Verse Ecosystem<br>
-          All assets are community-owned
+          © 2026 Verse Ecosystem • Nigeria
         </div>
       </div>
     </div>
   </footer>
 
   <!-- Upload Modal -->
-  <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-    <div class="bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-md mx-4 p-8">
-      <h2 class="text-2xl font-bold mb-6">Upload Asset to VerseKit</h2>
-      
-      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
-      
-      <div id="dropZone" class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer transition-colors">
-        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
-        <p class="text-gray-300">Drop file here or click to browse</p>
-      </div>
-
-      <div id="previewArea" class="hidden mt-6">
-        <img id="previewImage" class="w-full rounded-2xl border border-gray-700">
-        <p id="fileName" class="text-sm text-gray-400 mt-3 text-center"></p>
-      </div>
-
-      <div id="progressContainer" class="hidden mt-6">
-        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-          <div id="progressBar" class="h-full bg-emerald-500 w-0 transition-all duration-300"></div>
-        </div>
-        <p id="progressText" class="text-xs text-center text-gray-400 mt-2">Uploading...</p>
-     
+  <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+    <div
