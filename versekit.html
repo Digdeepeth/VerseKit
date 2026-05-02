@@ -15,18 +15,10 @@
       transform: translateY(-8px);
       box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
     }
-    .modal {
-      animation: fadeIn 0.2s ease-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
   </style>
 </head>
 <body class="bg-gray-950 text-gray-200 min-h-screen">
   <div class="max-w-7xl mx-auto px-6 py-10">
-    <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
       <div>
         <h1 class="text-5xl font-bold tracking-tight text-white">VerseKit</h1>
@@ -43,85 +35,68 @@
     <!-- Search & Filters -->
     <div class="flex flex-col md:flex-row gap-4 mb-10">
       <div class="flex-1 relative">
-        <input id="searchInput" 
-               type="text" 
-               placeholder="Search logos, banners, templates..."
+        <input id="searchInput" type="text" placeholder="Search assets..." 
                class="w-full bg-gray-900 border border-gray-700 focus:border-emerald-500 rounded-3xl py-5 px-6 pl-14 text-lg focus:outline-none">
         <i class="fas fa-search absolute left-6 top-5 text-gray-500 text-xl"></i>
       </div>
-      
-      <select id="categoryFilter" 
-              class="bg-gray-900 border border-gray-700 rounded-3xl px-8 py-5 focus:outline-none focus:border-emerald-500 text-base">
+      <select id="categoryFilter" class="bg-gray-900 border border-gray-700 rounded-3xl px-8 py-5 focus:outline-none focus:border-emerald-500">
         <option value="">All Categories</option>
         <option value="logo">Logos</option>
-        <option value="banner">Banners & Headers</option>
+        <option value="banner">Banners</option>
         <option value="template">Templates</option>
-        <option value="guideline">Brand Guidelines</option>
-        <option value="social">Social Media Kits</option>
-        <option value="video">Video Assets</option>
+        <option value="guideline">Guidelines</option>
+        <option value="social">Social Kits</option>
       </select>
     </div>
 
-    <!-- Gallery -->
-    <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-      <!-- JS will fill this -->
-    </div>
+    <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"></div>
   </div>
 
   <!-- Upload Modal -->
-  <div id="uploadModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-    <div class="modal bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-lg mx-4 p-8">
-      <h2 class="text-2xl font-bold mb-6">Upload New Asset</h2>
+  <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+    <div class="bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-md mx-4 p-8">
+      <h2 class="text-2xl font-bold mb-6">Upload Asset to VerseKit</h2>
       
-      <div class="space-y-6">
-        <div>
-          <label class="block text-sm text-gray-400 mb-2">Asset Name</label>
-          <input id="assetName" type="text" class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4" placeholder="e.g. Verse Birthday Banner">
-        </div>
-        
-        <div>
-          <label class="block text-sm text-gray-400 mb-2">Category</label>
-          <select id="assetCategory" class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4">
-            <option value="logo">Logo</option>
-            <option value="banner">Banner</option>
-            <option value="template">Template</option>
-            <option value="guideline">Guideline</option>
-            <option value="social">Social Kit</option>
-          </select>
-        </div>
-        
-        <div>
-          <label class="block text-sm text-gray-400 mb-2">File</label>
-          <div onclick="fakeFileSelect()" class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-10 text-center cursor-pointer transition-colors">
-            <i class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-3"></i>
-            <p class="text-gray-400">Click to select file or drag & drop</p>
-          </div>
-        </div>
+      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip,.psd">
+      
+      <div id="dropZone" 
+           class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer transition-colors">
+        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+        <p class="text-gray-300">Drop file here or click to browse</p>
+        <p class="text-xs text-gray-500 mt-2">PNG, JPG, SVG, PDF, ZIP supported</p>
       </div>
 
-      <div class="flex gap-4 mt-10">
+      <div id="previewArea" class="hidden mt-6">
+        <img id="previewImage" class="w-full rounded-2xl border border-gray-700">
+        <p id="fileName" class="text-sm text-gray-400 mt-3 text-center"></p>
+      </div>
+
+      <div id="progressContainer" class="hidden mt-6">
+        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-emerald-500 w-0 transition-all duration-300"></div>
+        </div>
+        <p id="progressText" class="text-xs text-center text-gray-400 mt-2">Uploading...</p>
+      </div>
+
+      <div class="flex gap-4 mt-8">
         <button onclick="hideUploadModal()" 
-                class="flex-1 py-4 border border-gray-600 rounded-2xl hover:bg-gray-800">
-          Cancel
-        </button>
-        <button onclick="simulateUpload()" 
-                class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold">
-          Upload to VerseKit
+                class="flex-1 py-4 border border-gray-600 rounded-2xl hover:bg-gray-800">Cancel</button>
+        <button onclick="startUpload()" id="uploadBtn"
+                class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold disabled:opacity-50">
+          Upload Asset
         </button>
       </div>
     </div>
   </div>
 
   <script>
-    const assets = [ /* same assets as before */ 
+    let assets = [
       { id: 1, title: "Verse Primary Logo", category: "logo", type: "PNG + SVG", size: "2.4 MB", img: "https://picsum.photos/id/237/400/300" },
       { id: 2, title: "Verse Dark Logo Pack", category: "logo", type: "PNG + SVG", size: "4.1 MB", img: "https://picsum.photos/id/201/400/300" },
       { id: 3, title: "Twitter Header Template", category: "banner", type: "PSD + PNG", size: "12 MB", img: "https://picsum.photos/id/180/400/300" },
-      { id: 4, title: "Community Banner Set", category: "banner", type: "PNG", size: "8.7 MB", img: "https://picsum.photos/id/251/400/300" },
-      { id: 5, title: "Content Creation Template", category: "template", type: "Canva + Figma", size: "45 MB", img: "https://picsum.photos/id/201/400/300" },
-      { id: 6, title: "Brand Guidelines v1.2", category: "guideline", type: "PDF", size: "6.8 MB", img: "https://picsum.photos/id/133/400/300" },
-      { id: 7, title: "Social Media Kit 2026", category: "social", type: "ZIP", size: "28 MB", img: "https://picsum.photos/id/180/400/300" },
     ];
+
+    let currentFile = null;
 
     function renderAssets(filteredAssets) {
       const grid = document.getElementById('assetGrid');
@@ -129,19 +104,16 @@
 
       filteredAssets.forEach(asset => {
         const card = document.createElement('div');
-        card.className = 'asset-card bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden group';
+        card.className = 'asset-card bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden';
         card.innerHTML = `
-          <div class="relative">
-            <img src="${asset.img}" class="w-full h-52 object-cover">
-            <span class="absolute top-3 right-3 text-xs px-3 py-1 bg-black/70 backdrop-blur-md rounded-full">${asset.category}</span>
-          </div>
+          <img src="${asset.img}" class="w-full h-52 object-cover">
           <div class="p-6">
-            <h3 class="font-semibold text-lg text-white mb-2">${asset.title}</h3>
-            <p class="text-gray-400 text-sm">${asset.type} • ${asset.size}</p>
-            
+            <h3 class="font-semibold text-white text-lg mb-1">${asset.title}</h3>
+            <p class="text-xs text-emerald-400 uppercase tracking-widest">${asset.category}</p>
+            <p class="text-sm text-gray-400 mt-4">${asset.type} • ${asset.size}</p>
             <button onclick="downloadAsset('${asset.title}')" 
-                    class="mt-6 w-full bg-gray-800 group-hover:bg-emerald-600 transition-all py-4 rounded-2xl text-sm font-medium">
-              Download Asset
+                    class="mt-6 w-full py-4 bg-gray-800 hover:bg-emerald-600 rounded-2xl text-sm font-medium transition-colors">
+              Download
             </button>
           </div>
         `;
@@ -150,47 +122,136 @@
     }
 
     function downloadAsset(name) {
-      alert(`✅ Downloading: ${name}`);
+      alert(`Downloading: ${name}`);
     }
 
-    // Upload Modal
+    // Modal Controls
     function showUploadModal() {
       document.getElementById('uploadModal').classList.remove('hidden');
+      resetModal();
     }
 
     function hideUploadModal() {
       document.getElementById('uploadModal').classList.add('hidden');
+      resetModal();
     }
 
-    function fakeFileSelect() {
-      alert("File selected! (This is a simulation 😊)");
+    function resetModal() {
+      currentFile = null;
+      document.getElementById('previewArea').classList.add('hidden');
+      document.getElementById('progressContainer').classList.add('hidden');
+      document.getElementById('uploadBtn').disabled = false;
     }
 
-    function simulateUpload() {
-      const name = document.getElementById('assetName').value || "Unnamed Asset";
-      hideUploadModal();
+    // File Handling
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileSelect);
+
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#10b981';
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.style.borderColor = '#4b5563';
+    });
+
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#4b5563';
+      handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFileSelect(e) {
+      handleFiles(e.target.files);
+    }
+
+    function handleFiles(files) {
+      if (files.length > 0) {
+        currentFile = files[0];
+        document.getElementById('fileName').textContent = currentFile.name;
+        
+        const previewArea = document.getElementById('previewArea');
+        previewArea.classList.remove('hidden');
+
+        if (currentFile.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            document.getElementById('previewImage').src = e.target.result;
+          };
+          reader.readAsDataURL(currentFile);
+        }
+      }
+    }
+
+    function startUpload() {
+      if (!currentFile) {
+        alert("Please select a file first!");
+        return;
+      }
+
+      const uploadBtn = document.getElementById('uploadBtn');
+      const progressContainer = document.getElementById('progressContainer');
       
+      uploadBtn.disabled = true;
+      progressContainer.classList.remove('hidden');
+
+      let progress = 0;
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+
+      const interval = setInterval(() => {
+        progress += Math.random() * 25;
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = progress + '%';
+        progressText.textContent = `Uploading... ${Math.round(progress)}%`;
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          finishUpload();
+        }
+      }, 300);
+    }
+
+    function finishUpload() {
+      const newAsset = {
+        id: Date.now(),
+        title: currentFile.name.split('.')[0] || "New Asset",
+        category: "banner", // You can improve this later
+        type: currentFile.name.split('.').pop().toUpperCase(),
+        size: (currentFile.size / (1024*1024)).toFixed(1) + " MB",
+        img: currentFile.type.startsWith('image/') ? URL.createObjectURL(currentFile) : "https://picsum.photos/id/180/400/300"
+      };
+
+      assets.unshift(newAsset);
+      renderAssets(assets);
+
       setTimeout(() => {
-        alert(`🎉 Asset "${name}" uploaded successfully!\n\nIt will appear in the gallery after moderation.`);
-        // In real app, we would add it to the assets array here
-      }, 800);
+        alert("✅ Asset uploaded successfully and added to the gallery!");
+        hideUploadModal();
+      }, 500);
     }
 
     // Filters
+    document.getElementById('searchInput').addEventListener('input', filterAssets);
+    document.getElementById('categoryFilter').addEventListener('change', filterAssets);
+
     function filterAssets() {
-      const term = document.getElementById('searchInput').value.toLowerCase();
+      const term = document.getElementById('searchInput').value.toLowerCase().trim();
       const cat = document.getElementById('categoryFilter').value;
 
       const filtered = assets.filter(a => 
-        a.title.toLowerCase().includes(term) && (!cat || a.category === cat)
+        (!term || a.title.toLowerCase().includes(term)) &&
+        (!cat || a.category === cat)
       );
       renderAssets(filtered);
     }
 
-    document.getElementById('searchInput').addEventListener('input', filterAssets);
-    document.getElementById('categoryFilter').addEventListener('change', filterAssets);
-
-    // Initial render
+    // Initial load
     renderAssets(assets);
   </script>
 </body>
