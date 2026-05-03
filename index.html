@@ -8,17 +8,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body>
-  <div class="max-w-7xl mx-auto px-6 py-10 flex-1">
+  <main class="max-w-7xl mx-auto px-6 py-10">
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
       <div>
-        <h1 class="text-5xl font-bold tracking-tight">VerseKit</h1>
+        <h1 class="text-5xl font-bold tracking-tight text-white">VerseKit</h1>
         <p class="text-emerald-400 mt-1 text-lg">Official Verse Community Asset Hub</p>
       </div>
       
       <button onclick="showUploadModal()" class="upload-btn">
         <i class="fas fa-upload"></i>
-        <span>Upload New Asset</span>
+        Upload New Asset
       </button>
     </div>
 
@@ -26,7 +26,7 @@
     <div class="flex flex-col md:flex-row gap-4 mb-10">
       <div class="flex-1 relative">
         <input id="searchInput" type="text" placeholder="Search assets..." class="search-input">
-        <i class="fas fa-search absolute left-6 top-5 text-gray-500 text-xl"></i>
+        <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"></i>
       </div>
       <select id="categoryFilter" class="category-select">
         <option value="">All Categories</option>
@@ -39,57 +39,56 @@
     </div>
 
     <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"></div>
-  </div>
+  </main>
 
   <!-- Footer -->
-  <footer>
+  <footer class="footer">
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
           <p class="text-white font-medium text-lg">VerseKit</p>
-          <p class="text-gray-500 text-sm">Built for the Verse Community</p>
+          <p class="text-gray-500 text-sm">Built for the Verse Community • Nigeria</p>
         </div>
 
         <div class="flex gap-8 text-2xl text-gray-400">
-          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-x-twitter"></i></a>
-          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-telegram"></i></a>
-          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-discord"></i></a>
-          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-github"></i></a>
+          <a href="#" class="hover:text-emerald-400"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="hover:text-emerald-400"><i class="fab fa-telegram"></i></a>
+          <a href="#" class="hover:text-emerald-400"><i class="fab fa-discord"></i></a>
+          <a href="#" class="hover:text-emerald-400"><i class="fab fa-github"></i></a>
         </div>
 
-        <div class="text-gray-500 text-sm">© 2026 Verse Ecosystem • Nigeria</div>
+        <div class="text-gray-500 text-sm">© 2026 Verse Ecosystem</div>
       </div>
     </div>
   </footer>
 
   <!-- Upload Modal -->
-  <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-    <!-- Modal content remains same as before -->
-    <div class="bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-md p-8">
-      <h2 class="text-2xl font-bold mb-6">Upload Asset</h2>
+  <div id="uploadModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-6 text-white">Upload New Asset</h2>
       
       <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
       
       <div id="dropZone" class="drop-zone">
-        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
-        <p class="text-gray-300">Drop file here or click to browse</p>
+        <i class="fas fa-cloud-upload-alt text-5xl mb-4"></i>
+        <p>Drop file here or click to browse</p>
       </div>
 
       <div id="previewArea" class="hidden mt-6">
-        <img id="previewImage" class="w-full rounded-2xl border border-gray-700 max-h-64 object-contain">
+        <img id="previewImage" class="preview-img">
         <p id="fileName" class="text-sm text-gray-400 mt-3 text-center"></p>
       </div>
 
       <div id="progressContainer" class="hidden mt-6">
-        <div class="progress-bar-bg">
+        <div class="progress-bg">
           <div id="progressBar" class="progress-bar"></div>
         </div>
-        <p id="progressText" class="text-xs text-center text-gray-400 mt-2">Uploading...</p>
+        <p id="progressText" class="text-center text-xs mt-2 text-gray-400">Uploading...</p>
       </div>
 
       <div class="flex gap-4 mt-8">
-        <button onclick="hideUploadModal()" class="cancel-btn">Cancel</button>
-        <button onclick="startUpload()" id="uploadBtn" class="upload-confirm-btn">Upload</button>
+        <button onclick="hideUploadModal()" class="btn-secondary">Cancel</button>
+        <button onclick="startUpload()" id="uploadBtn" class="btn-primary">Upload Asset</button>
       </div>
     </div>
   </div>
