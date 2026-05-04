@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VerseKit • Community Assets</title>
-  
+ 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  
-  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -72,20 +70,35 @@
     </div>
   </footer>
 
-  <!-- Upload Modal -->
+  <!-- Upload Modal with Category Selector -->
   <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
     <div class="bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-md p-8">
-      <h2 class="text-2xl font-bold mb-6">Upload Asset</h2>
-      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
+      <h2 class="text-2xl font-bold mb-6">Upload New Asset</h2>
       
-      <div id="dropZone" class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer">
-        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
-        <p class="text-gray-300">Drop file here or click to browse</p>
-      </div>
+      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
 
-      <div id="previewArea" class="hidden mt-6">
-        <img id="previewImage" class="w-full rounded-2xl border border-gray-700 max-h-64 object-contain">
-        <p id="fileName" class="text-sm text-gray-400 mt-3 text-center"></p>
+      <div class="space-y-6">
+        <!-- Category Selection -->
+        <div>
+          <label class="block text-sm text-gray-400 mb-2">Category</label>
+          <select id="uploadCategory" class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500">
+            <option value="logo">Logo</option>
+            <option value="banner">Banner</option>
+            <option value="template">Template</option>
+            <option value="guideline">Brand Guideline</option>
+            <option value="social">Social Media Kit</option>
+          </select>
+        </div>
+
+        <div id="dropZone" class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer transition-colors">
+          <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+          <p class="text-gray-300">Drop file here or click to browse</p>
+        </div>
+
+        <div id="previewArea" class="hidden mt-6">
+          <img id="previewImage" class="w-full rounded-2xl border border-gray-700 max-h-64 object-contain">
+          <p id="fileName" class="text-sm text-gray-400 mt-3 text-center"></p>
+        </div>
       </div>
 
       <div id="progressContainer" class="hidden mt-6">
@@ -97,31 +110,28 @@
 
       <div class="flex gap-4 mt-8">
         <button onclick="hideUploadModal()" class="flex-1 py-4 border border-gray-600 rounded-2xl hover:bg-gray-800">Cancel</button>
-        <button onclick="startUpload()" id="uploadBtn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold disabled:opacity-50">Upload</button>
+        <button onclick="startUpload()" id="uploadBtn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold disabled:opacity-50">Upload Asset</button>
       </div>
     </div>
   </div>
 
   <script>
     // ================== SUPABASE CONFIG ==================
-    const SUPABASE_URL = 'https://pibnmulaxqixmyjyemeh.supabase.co';        // ← CHANGE THIS
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYm5tdWxheHFpeG15anllbWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODk4NTYsImV4cCI6MjA5MzQ2NTg1Nn0.DqzFO4Z7IYUXxGb3D8n7hKfLjYcmYg2SQJfghlqmiSw';                   // ← CHANGE THIS
+    const SUPABASE_URL = 'https://pibnmulaxqixmyjyemeh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYm5tdWxheHFpeG15anllbWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODk4NTYsImV4cCI6MjA5MzQ2NTg1Nn0.DqzFO4Z7IYUXxGb3D8n7hKfLjYcmYg2SQJfghlqmiSw';
 
     const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let assets = [];
+    let currentFile = null;
 
-    // Load assets from Supabase
     async function loadAssets() {
       const { data, error } = await supabase
         .from('assets')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error loading assets:', error);
-        return;
-      }
+      if (error) console.error('Error loading assets:', error);
       assets = data || [];
       renderAssets(assets);
     }
@@ -164,9 +174,7 @@
       document.body.removeChild(link);
     }
 
-    // Upload Functions
-    let currentFile = null;
-
+    // Modal Functions
     function showUploadModal() {
       document.getElementById('uploadModal').classList.remove('hidden');
       resetModal();
@@ -184,7 +192,7 @@
       document.getElementById('uploadBtn').disabled = false;
     }
 
-    // File handlers (same as before)
+    // File Handling
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
 
@@ -213,36 +221,36 @@
       }
     }
 
+    // Updated Upload Function with Category
     async function startUpload() {
       if (!currentFile) return alert("Please select a file first!");
 
+      const selectedCategory = document.getElementById('uploadCategory').value;
       const uploadBtn = document.getElementById('uploadBtn');
       const progressContainer = document.getElementById('progressContainer');
+
       uploadBtn.disabled = true;
       progressContainer.classList.remove('hidden');
 
       try {
-        // Upload file to Supabase Storage
         const fileExt = currentFile.name.split('.').pop();
         const fileName = `${Date.now()}.${fileExt}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('verse-assets')
           .upload(fileName, currentFile);
 
         if (uploadError) throw uploadError;
 
-        // Get public URL
         const { data: { publicUrl } } = supabase.storage
           .from('verse-assets')
           .getPublicUrl(fileName);
 
-        // Save metadata to database
         const { error: dbError } = await supabase
           .from('assets')
           .insert({
             title: currentFile.name.split('.')[0],
-            category: 'banner',
+            category: selectedCategory,
             type: fileExt.toUpperCase(),
             size: (currentFile.size / (1024 * 1024)).toFixed(1) + " MB",
             file_url: publicUrl,
@@ -253,7 +261,7 @@
 
         alert("✅ Asset uploaded successfully!");
         hideUploadModal();
-        loadAssets(); // Refresh the list
+        loadAssets();
 
       } catch (error) {
         console.error(error);
@@ -265,7 +273,7 @@
       const term = document.getElementById('searchInput').value.toLowerCase().trim();
       const cat = document.getElementById('categoryFilter').value;
 
-      const filtered = assets.filter(a => 
+      const filtered = assets.filter(a =>
         (!term || a.title.toLowerCase().includes(term)) && (!cat || a.category === cat)
       );
       renderAssets(filtered);
@@ -275,7 +283,6 @@
     document.getElementById('searchInput').addEventListener('input', filterAssets);
     document.getElementById('categoryFilter').addEventListener('change', filterAssets);
 
-    // Load assets when page loads
     loadAssets();
   </script>
 </body>
