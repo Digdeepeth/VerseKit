@@ -1,52 +1,38 @@
-
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VerseKit • Community Assets</title>
-  
+  <title>VerseKit • Debug Mode</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .asset-card { transition: all 0.3s; }
-    .asset-card:hover { transform: translateY(-8px); }
-  </style>
 </head>
-<body class="bg-gray-950 text-gray-200 min-h-screen flex flex-col">
-  <div class="max-w-7xl mx-auto px-6 py-10 flex-1">
-    <h1 class="text-5xl font-bold text-white mb-2">VerseKit</h1>
-    <p class="text-emerald-400 mb-8">Debug Mode</p>
+<body class="bg-gray-950 text-white p-8">
+  <h1 class="text-4xl font-bold mb-2">VerseKit - Heavy Debug</h1>
+  <p class="text-emerald-400 mb-8">Check Console (F12) after every action</p>
 
-    <button onclick="showUploadModal()" class="bg-emerald-600 px-8 py-4 rounded-2xl mb-8">
-      Upload New Asset
-    </button>
+  <button onclick="showUploadModal()" class="bg-emerald-600 px-6 py-3 rounded-xl mb-8">
+    Upload Test Asset
+  </button>
 
-    <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
-  </div>
+  <div id="status" class="mb-6 text-sm"></div>
+  <div id="assetGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
 
-  <!-- Upload Modal -->
-  <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+  <!-- Simple Modal -->
+  <div id="uploadModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center">
     <div class="bg-gray-900 p-8 rounded-3xl w-full max-w-md">
-      <h2 class="text-xl font-bold mb-6">Upload Asset (Debug)</h2>
+      <h2 class="text-xl mb-4">Test Upload</h2>
       
-      <select id="uploadCategory" class="w-full p-4 rounded-xl bg-gray-800 mb-4">
+      <select id="uploadCategory" class="w-full p-4 bg-gray-800 rounded-xl mb-4">
         <option value="banner">Banner</option>
         <option value="logo">Logo</option>
-        <option value="template">Template</option>
       </select>
 
-      <input type="file" id="fileInput" class="hidden">
-      <div id="dropZone" class="border-2 border-dashed border-gray-600 p-12 rounded-3xl text-center cursor-pointer">
-        Click or drop file
-      </div>
-
-      <div class="mt-6">
-        <button onclick="startUpload()" class="w-full bg-emerald-600 py-4 rounded-2xl">Upload Now</button>
-      </div>
+      <input type="file" id="fileInput" class="block w-full mb-4">
+      
+      <button onclick="startUpload()" class="w-full bg-emerald-600 py-4 rounded-xl">
+        Start Upload
+      </button>
     </div>
   </div>
 
@@ -57,20 +43,28 @@
     const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function loadAssets() {
-      console.log("🔄 Loading assets...");
-      const { data, error } = await supabase.from('assets').select('*');
-      console.log("📊 Assets loaded:", data);
-      console.log("❌ Error:", error);
+      console.log("🔄 Loading assets from Supabase...");
+      const { data, error } = await supabase.from('assets').select('*').order('created_at', { ascending: false });
       
+      console.log("📊 Data returned:", data);
+      console.log("❌ Error:", error);
+
       const grid = document.getElementById('assetGrid');
       grid.innerHTML = '';
 
-      if (data && data.length > 0) {
-        data.forEach(a => {
-          grid.innerHTML += `<div class="bg-gray-900 p-4 rounded-2xl"><img src="${a.file_url}" class="w-full h-40 object-cover rounded-xl"><p>${a.title}</p></div>`;
+      if (error) {
+        grid.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
+      } else if (data && data.length > 0) {
+        data.forEach(asset => {
+          grid.innerHTML += `
+            <div class="bg-gray-900 p-4 rounded-2xl">
+              <img src="${asset.file_url}" class="w-full h-40 object-cover rounded-xl mb-2">
+              <p class="font-medium">${asset.title}</p>
+              <p class="text-emerald-400 text-sm">${asset.category}</p>
+            </div>`;
         });
       } else {
-        grid.innerHTML = '<p class="text-gray-400">No assets yet. Upload one!</p>';
+        grid.innerHTML = '<p class="text-gray-400">No assets found in database yet.</p>';
       }
     }
 
@@ -80,46 +74,58 @@
 
     async function startUpload() {
       const fileInput = document.getElementById('fileInput');
-      if (!fileInput.files[0]) return alert("Please select a file");
-
       const file = fileInput.files[0];
+      if (!file) return alert("Please select a file");
+
       const category = document.getElementById('uploadCategory').value;
+      console.log("🚀 Starting upload...", file.name);
 
       try {
-        alert("Uploading... Check console for logs");
+        const fileName = `${Date.now()}-${file.name}`;
 
-        const fileName = Date.now() + "-" + file.name;
+        console.log("1️⃣ Uploading to Storage bucket: verse-assets");
 
-        // Upload to storage
         const { error: uploadError } = await supabase.storage
           .from('verse-assets')
           .upload(fileName, file);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error("Storage Upload Error:", uploadError);
+          throw new Error("Storage: " + uploadError.message);
+        }
+
+        console.log("✅ File uploaded to storage");
 
         const { data: urlData } = supabase.storage.from('verse-assets').getPublicUrl(fileName);
+        console.log("2️⃣ Public URL:", urlData.publicUrl);
 
-        // Insert record
+        console.log("3️⃣ Inserting record into 'assets' table...");
+
         const { error: dbError } = await supabase.from('assets').insert({
           title: file.name.split('.')[0],
           category: category,
           type: file.name.split('.').pop().toUpperCase(),
           size: (file.size / 1024 / 1024).toFixed(2) + " MB",
-          file_url: urlData.publicUrl
+          file_url: urlData.publicUrl,
+          original_name: file.name
         });
 
-        if (dbError) throw dbError;
+        if (dbError) {
+          console.error("Database Insert Error:", dbError);
+          throw new Error("Database: " + dbError.message);
+        }
 
-        alert("✅ Upload Successful!");
+        console.log("🎉 SUCCESS! Asset should now be saved.");
+        alert("Upload completed! Check console and refresh.");
         loadAssets();
 
       } catch (err) {
-        console.error("Upload Error:", err);
-        alert("Upload Failed: " + err.message);
+        console.error("💥 Final Error:", err);
+        alert("Upload failed - check console (F12)");
       }
     }
 
-    // Auto load on start
+    // Load assets on start
     loadAssets();
   </script>
 </body>
