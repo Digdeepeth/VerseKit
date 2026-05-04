@@ -4,26 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VerseKit • Community Assets</title>
-  
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: blob: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:;">
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .asset-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .asset-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+    }
+  </style>
 </head>
 <body class="bg-gray-950 text-gray-200 min-h-screen flex flex-col">
   <div class="max-w-7xl mx-auto px-6 py-10 flex-1">
+    <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
       <div>
         <h1 class="text-5xl font-bold tracking-tight text-white">VerseKit</h1>
-        <p class="text-emerald-400 mt-1 text-lg">Verse Community Asset Hub</p>
+        <p class="text-emerald-400 mt-1 text-lg">Official Verse Community Asset Hub</p>
       </div>
-      <button onclick="showUploadModal()" class="bg-emerald-600 hover:bg-emerald-500 px-8 py-4 rounded-2xl font-semibold flex items-center gap-3">
+      
+      <button onclick="showUploadModal()" 
+              class="bg-emerald-600 hover:bg-emerald-500 px-8 py-4 rounded-2xl font-semibold flex items-center gap-3 transition-all">
         <i class="fas fa-upload"></i>
         <span>Upload New Asset</span>
       </button>
     </div>
 
+    <!-- Search & Filters -->
     <div class="flex flex-col md:flex-row gap-4 mb-10">
       <div class="flex-1 relative">
         <input id="searchInput" type="text" placeholder="Search assets..." 
@@ -43,85 +53,94 @@
     <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"></div>
   </div>
 
+  <!-- Footer with Social Icons in same container -->
+  <footer class="bg-gray-900 border-t border-gray-800 py-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <!-- Branding -->
+        <div>
+          <p class="text-white font-medium text-lg">VerseKit</p>
+          <p class="text-gray-500 text-sm">Built for the Verse Community</p>
+        </div>
+
+        <!-- Social Icons -->
+        <div class="flex gap-8 text-2xl text-gray-400">
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-telegram"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-discord"></i></a>
+          <a href="#" class="hover:text-emerald-400 transition-colors"><i class="fab fa-github"></i></a>
+        </div>
+
+        <!-- Copyright -->
+        <div class="text-gray-500 text-sm text-center md:text-right">
+          © 2026 Verse Ecosystem • Nigeria
+        </div>
+      </div>
+    </div>
+  </footer>
+
   <!-- Upload Modal -->
   <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
     <div class="bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-md p-8">
-      <h2 class="text-2xl font-bold mb-6">Upload New Asset</h2>
+      <h2 class="text-2xl font-bold mb-6">Upload Asset</h2>
       
-      <div class="space-y-6">
-        <div>
-          <label class="block text-sm text-gray-400 mb-2">Asset Name</label>
-          <input id="assetName" type="text" class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4" placeholder="Enter asset name">
-        </div>
+      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
+      
+      <div id="dropZone" class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer transition-colors">
+        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+        <p class="text-gray-300">Drop file here or click to browse</p>
+      </div>
 
-        <div>
-          <label class="block text-sm text-gray-400 mb-2">Category</label>
-          <select id="uploadCategory" class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4">
-            <option value="logo">Logo</option>
-            <option value="banner">Banner</option>
-            <option value="template">Template</option>
-            <option value="guideline">Guideline</option>
-            <option value="social">Social Kit</option>
-          </select>
-        </div>
+      <div id="previewArea" class="hidden mt-6">
+        <img id="previewImage" class="w-full rounded-2xl border border-gray-700 max-h-64 object-contain">
+        <p id="fileName" class="text-sm text-gray-400 mt-3 text-center"></p>
+      </div>
 
-        <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
-        <div id="dropZone" class="border-2 border-dashed border-gray-600 hover:border-emerald-500 rounded-3xl p-12 text-center cursor-pointer">
-          <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
-          <p class="text-gray-300">Drop file here or click to browse</p>
+      <div id="progressContainer" class="hidden mt-6">
+        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-emerald-500 w-0 transition-all"></div>
         </div>
+        <p id="progressText" class="text-xs text-center text-gray-400 mt-2">Uploading...</p>
       </div>
 
       <div class="flex gap-4 mt-8">
         <button onclick="hideUploadModal()" class="flex-1 py-4 border border-gray-600 rounded-2xl hover:bg-gray-800">Cancel</button>
-        <button onclick="startUpload()" id="uploadBtn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold">Upload Asset</button>
+        <button onclick="startUpload()" id="uploadBtn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold disabled:opacity-50">Upload</button>
       </div>
     </div>
   </div>
 
   <script>
-    const supabase = Supabase.createClient(
-      'https://pibnmulaxqixmyjyemeh.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYm5tdWxheHFpeG15anllbWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODk4NTYsImV4cCI6MjA5MzQ2NTg1Nn0.DqzFO4Z7IYUXxGb3D8n7hKfLjYcmYg2SQJfghlqmiSw'
-    );
+    let assets = [
+      { id: 1, title: "Verse Primary Logo", category: "logo", type: "PNG + SVG", size: "2.4 MB", img: "https://picsum.photos/id/237/800/600" },
+      { id: 2, title: "Verse Dark Logo Pack", category: "logo", type: "PNG + SVG", size: "4.1 MB", img: "https://picsum.photos/id/201/800/600" },
+      { id: 3, title: "Twitter Header Template", category: "banner", type: "PNG", size: "12 MB", img: "https://picsum.photos/id/180/800/600" },
+    ];
 
-    let assets = [];
     let currentFile = null;
 
-    async function loadAssets() {
-      const { data, error } = await supabase
-        .from('assets')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error("Load Error:", error);
-        return;
-      }
-      assets = data || [];
-      renderAssets(assets);
-    }
-
-    function renderAssets(data) {
+    function renderAssets(filteredAssets) {
       const grid = document.getElementById('assetGrid');
       grid.innerHTML = '';
 
-      if (data.length === 0) {
-        grid.innerHTML = `<p class="text-gray-400 text-center py-20 col-span-full">No assets yet. Upload the first one!</p>`;
+      if (filteredAssets.length === 0) {
+        grid.innerHTML = `<p class="text-gray-400 col-span-full text-center py-20">No assets found.</p>`;
         return;
       }
 
-      data.forEach(asset => {
+      filteredAssets.forEach(asset => {
         const card = document.createElement('div');
         card.className = 'asset-card bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden';
         card.innerHTML = `
-          <img src="${asset.file_url}" class="w-full h-52 object-cover">
+          <img src="${asset.img}" class="w-full h-52 object-cover">
           <div class="p-6">
             <h3 class="font-semibold text-white text-lg mb-1">${asset.title}</h3>
             <p class="text-xs text-emerald-400 uppercase">${asset.category}</p>
-            <button onclick="downloadAsset('${asset.title}', '${asset.file_url}')" 
-                    class="mt-6 w-full py-4 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-medium">
-              Download
+            <p class="text-sm text-gray-400 mt-4">${asset.type} • ${asset.size}</p>
+            
+            <button onclick="downloadAsset('${asset.title}', '${asset.img}')" 
+                    class="mt-6 w-full py-4 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm font-medium transition-colors flex items-center justify-center gap-2">
+              <i class="fas fa-download"></i> Download
             </button>
           </div>
         `;
@@ -129,82 +148,118 @@
       });
     }
 
-    function downloadAsset(title, url) {
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = title;
-      a.click();
+    function downloadAsset(filename, imageUrl) {
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = filename.replace(/\s+/g, '-') + '.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
+    // Upload Functions
     function showUploadModal() {
       document.getElementById('uploadModal').classList.remove('hidden');
+      resetModal();
     }
 
     function hideUploadModal() {
       document.getElementById('uploadModal').classList.add('hidden');
+      resetModal();
     }
 
-    // File Handling
-    document.getElementById('dropZone').addEventListener('click', () => {
-      document.getElementById('fileInput').click();
+    function resetModal() {
+      currentFile = null;
+      document.getElementById('previewArea').classList.add('hidden');
+      document.getElementById('progressContainer').classList.add('hidden');
+      document.getElementById('uploadBtn').disabled = false;
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = '#10b981'; });
+    dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = '#4b5563');
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#4b5563';
+      handleFiles(e.dataTransfer.files);
     });
 
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-      currentFile = e.target.files[0];
-    });
+    function handleFiles(files) {
+      if (files.length > 0) {
+        currentFile = files[0];
+        document.getElementById('fileName').textContent = currentFile.name;
+        document.getElementById('previewArea').classList.remove('hidden');
 
-    async function startUpload() {
-      if (!currentFile) return alert("Please select a file first!");
-
-      const name = document.getElementById('assetName').value.trim() || currentFile.name.split('.')[0];
-      const category = document.getElementById('uploadCategory').value;
-
-      try {
-        const fileName = `${Date.now()}-${currentFile.name}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('verse-assets')
-          .upload(fileName, currentFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage.from('verse-assets').getPublicUrl(fileName);
-
-        const { error: dbError } = await supabase.from('assets').insert({
-          title: name,
-          category: category,
-          type: currentFile.name.split('.').pop().toUpperCase(),
-          size: (currentFile.size / 1024 / 1024).toFixed(2) + " MB",
-          file_url: urlData.publicUrl
-        });
-
-        if (dbError) throw dbError;
-
-        alert("✅ Asset uploaded successfully!");
-        hideUploadModal();
-        loadAssets();
-
-      } catch (err) {
-        console.error(err);
-        alert("Upload failed: " + err.message);
+        if (currentFile.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = e => document.getElementById('previewImage').src = e.target.result;
+          reader.readAsDataURL(currentFile);
+        }
       }
     }
 
-    // Filters
-    document.getElementById('searchInput').addEventListener('input', filterAssets);
-    document.getElementById('categoryFilter').addEventListener('change', filterAssets);
+    function startUpload() {
+      if (!currentFile) return alert("Please select a file first!");
+
+      const uploadBtn = document.getElementById('uploadBtn');
+      const progressContainer = document.getElementById('progressContainer');
+      uploadBtn.disabled = true;
+      progressContainer.classList.remove('hidden');
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 35;
+        if (progress > 100) progress = 100;
+
+        document.getElementById('progressBar').style.width = progress + '%';
+        document.getElementById('progressText').textContent = `Uploading... ${Math.round(progress)}%`;
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          finishUpload();
+        }
+      }, 200);
+    }
+
+    function finishUpload() {
+      const newAsset = {
+        id: Date.now(),
+        title: currentFile.name.split('.')[0] || "New Asset",
+        category: "banner",
+        type: currentFile.name.split('.').pop().toUpperCase(),
+        size: (currentFile.size / (1024 * 1024)).toFixed(1) + " MB",
+        img: currentFile.type.startsWith('image/') ? URL.createObjectURL(currentFile) : "https://picsum.photos/id/180/800/600"
+      };
+
+      assets.unshift(newAsset);
+      renderAssets(assets);
+      
+      setTimeout(() => {
+        alert("✅ Asset uploaded successfully!");
+        hideUploadModal();
+      }, 300);
+    }
 
     function filterAssets() {
       const term = document.getElementById('searchInput').value.toLowerCase().trim();
       const cat = document.getElementById('categoryFilter').value;
+
       const filtered = assets.filter(a => 
         (!term || a.title.toLowerCase().includes(term)) && (!cat || a.category === cat)
       );
       renderAssets(filtered);
     }
 
-    // Initialize
-    loadAssets();
+    document.getElementById('searchInput').addEventListener('input', filterAssets);
+    document.getElementById('categoryFilter').addEventListener('change', filterAssets);
+
+    // Initial Render
+    renderAssets(assets);
   </script>
 </body>
 </html>
