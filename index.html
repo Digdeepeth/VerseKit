@@ -1,124 +1,77 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VerseKit • Community Assets</title>
-  
-  <!-- 🔥 CSP Fix for Supabase -->
-  <meta http-equiv="Content-Security-Policy" 
-        content="default-src 'self' https: blob: data:;
-                 script-src 'self' 'unsafe-inline' 'unsafe-eval' https: https://cdn.jsdelivr.net https://cdn.tailwindcss.com;
-                 style-src 'self' 'unsafe-inline' https:;
-                 img-src 'self' https: data: blob:;
-                 connect-src 'self' https: wss:;">
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <title>VerseKit - Minimal Test</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-950 text-white p-8">
-  <h1 class="text-4xl font-bold mb-4">VerseKit</h1>
-  <p class="text-emerald-400 mb-8">CSP Fixed Version</p>
+<body style="padding: 40px; font-family: Arial">
 
-  <button onclick="showUploadModal()" class="bg-emerald-600 px-8 py-4 rounded-2xl mb-8 font-medium">
-    Upload Test Asset
+  <h1>Supabase Upload Test</h1>
+  <p>Check console (F12) after upload</p>
+
+  <input type="file" id="fileInput">
+  <br><br>
+  <button onclick="testUpload()" style="padding: 12px 24px; background: #10b981; color: white; border: none; border-radius: 8px;">
+    Test Upload
   </button>
 
-  <div id="status" class="mb-6 text-sm bg-gray-900 p-4 rounded-xl min-h-[50px]"></div>
-  <div id="assetGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-
-  <!-- Upload Modal -->
-  <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-    <div class="bg-gray-900 p-8 rounded-3xl w-full max-w-md">
-      <h2 class="text-2xl mb-6">Upload Asset</h2>
-      
-      <select id="uploadCategory" class="w-full p-4 bg-gray-800 rounded-2xl mb-6">
-        <option value="banner">Banner</option>
-        <option value="logo">Logo</option>
-        <option value="template">Template</option>
-        <option value="guideline">Guideline</option>
-      </select>
-
-      <input type="file" id="fileInput" class="block w-full mb-6">
-      
-      <button onclick="startUpload()" class="w-full bg-emerald-600 py-4 rounded-2xl font-medium">
-        Upload to Supabase
-      </button>
-    </div>
-  </div>
-
   <script>
-    const SUPABASE_URL = 'https://pibnmulaxqixmyjyemeh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYm5tdWxheHFpeG15anllbWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODk4NTYsImV4cCI6MjA5MzQ2NTg1Nn0.DqzFO4Z7IYUXxGb3D8n7hKfLjYcmYg2SQJfghlqmiSw';
+    const supabase = Supabase.createClient(
+      'https://pibnmulaxqixmyjyemeh.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYm5tdWxheHFpeG15anllbWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODk4NTYsImV4cCI6MjA5MzQ2NTg1Nn0.DqzFO4Z7IYUXxGb3D8n7hKfLjYcmYg2SQJfghlqmiSw'
+    );
 
-    const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    async function loadAssets() {
-      const { data, error } = await supabase.from('assets').select('*').order('created_at', { ascending: false });
-      const grid = document.getElementById('assetGrid');
-      grid.innerHTML = '';
-
-      if (error) {
-        document.getElementById('status').innerHTML = `❌ Error loading: ${error.message}`;
-      } else if (data && data.length > 0) {
-        document.getElementById('status').innerHTML = `✅ ${data.length} assets loaded`;
-        data.forEach(asset => {
-          grid.innerHTML += `
-            <div class="bg-gray-900 p-4 rounded-2xl">
-              <img src="${asset.file_url}" class="w-full h-40 object-cover rounded-xl mb-3">
-              <p class="font-medium">${asset.title}</p>
-              <p class="text-emerald-400 text-sm">${asset.category}</p>
-            </div>`;
-        });
-      } else {
-        document.getElementById('status').innerHTML = 'No assets yet. Upload one!';
-      }
-    }
-
-    function showUploadModal() {
-      document.getElementById('uploadModal').classList.remove('hidden');
-    }
-
-    async function startUpload() {
+    async function testUpload() {
       const file = document.getElementById('fileInput').files[0];
-      if (!file) return alert("Please select a file");
+      if (!file) return alert("Select a file first");
 
-      const status = document.getElementById('status');
-      status.innerHTML = "Uploading... Please wait";
+      console.log("Starting upload test...");
 
       try {
         const fileName = `${Date.now()}-${file.name}`;
 
+        // 1. Upload to Storage
+        console.log("Uploading to storage...");
         const { error: uploadError } = await supabase.storage
           .from('verse-assets')
           .upload(fileName, file);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error("Storage Error:", uploadError);
+          alert("Storage Error: " + uploadError.message);
+          return;
+        }
 
+        console.log("✅ Storage upload successful");
+
+        // 2. Get URL
         const { data: urlData } = supabase.storage.from('verse-assets').getPublicUrl(fileName);
 
+        // 3. Insert into table
+        console.log("Inserting into database...");
         const { error: dbError } = await supabase.from('assets').insert({
           title: file.name.split('.')[0],
-          category: document.getElementById('uploadCategory').value,
+          category: "test",
           type: file.name.split('.').pop().toUpperCase(),
           size: (file.size / 1024 / 1024).toFixed(2) + " MB",
           file_url: urlData.publicUrl
         });
 
-        if (dbError) throw dbError;
-
-        status.innerHTML = "✅ Upload Successful!";
-        setTimeout(loadAssets, 800);
+        if (dbError) {
+          console.error("Database Error:", dbError);
+          alert("Database Error: " + dbError.message);
+        } else {
+          console.log("🎉 SUCCESS! Both storage and database should be updated.");
+          alert("Upload completed successfully! Check Supabase now.");
+        }
 
       } catch (err) {
-        console.error(err);
-        status.innerHTML = `❌ Failed: ${err.message}`;
+        console.error("Unexpected Error:", err);
+        alert("Unexpected error - check console");
       }
     }
-
-    // Initial load
-    loadAssets();
   </script>
 </body>
 </html>
