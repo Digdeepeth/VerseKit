@@ -68,15 +68,24 @@
     </div>
   </footer>
 
-  <!-- Upload Modal -->
+  <!-- Improved Upload Modal -->
   <div id="uploadModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
     <div class="bg-gray-900 border border-gray-700 rounded-3xl w-full max-w-md p-8">
       <h2 class="text-2xl font-bold mb-6">Upload New Asset</h2>
       
       <div class="space-y-6">
+        <!-- File Name / Rename -->
+        <div>
+          <label class="block text-sm text-gray-400 mb-2">Asset Name</label>
+          <input id="assetName" type="text" 
+                 class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500"
+                 placeholder="Enter asset name (e.g. Verse Birthday Banner)">
+        </div>
+
+        <!-- Category -->
         <div>
           <label class="block text-sm text-gray-400 mb-2">Category</label>
-          <select id="uploadCategory" class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4">
+          <select id="uploadCategory" class="w-full bg-gray-800 border border-gray-600 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500">
             <option value="logo">Logo</option>
             <option value="banner">Banner</option>
             <option value="template">Template</option>
@@ -105,7 +114,7 @@
   </div>
 
   <script>
-    let assets = [
+    let assets = [ /* your sample assets */ 
       { id: 1, title: "Verse Primary Logo", category: "logo", type: "PNG + SVG", size: "2.4 MB", img: "https://picsum.photos/id/237/800/600" },
       { id: 2, title: "Verse Dark Logo Pack", category: "logo", type: "PNG + SVG", size: "4.1 MB", img: "https://picsum.photos/id/201/800/600" },
       { id: 3, title: "Twitter Header Template", category: "banner", type: "PNG", size: "12 MB", img: "https://picsum.photos/id/180/800/600" },
@@ -147,12 +156,14 @@
 
     function showUploadModal() {
       document.getElementById('uploadModal').classList.remove('hidden');
+      document.getElementById('assetName').value = "";
     }
 
     function hideUploadModal() {
       document.getElementById('uploadModal').classList.add('hidden');
     }
 
+    // File Handling
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
 
@@ -161,11 +172,21 @@
       currentFile = e.target.files[0];
       document.getElementById('fileName').textContent = currentFile.name;
       document.getElementById('previewArea').classList.remove('hidden');
+      
+      // Auto-fill name if empty
+      if (!document.getElementById('assetName').value) {
+        document.getElementById('assetName').value = currentFile.name.split('.')[0];
+      }
     });
 
     function startUpload() {
       if (!currentFile) return alert("Please select a file");
-      alert(`Asset uploaded: ${currentFile.name}\nCategory: ${document.getElementById('uploadCategory').value}\n\n(Note: Currently saved only in browser)`);
+
+      const customName = document.getElementById('assetName').value.trim() || currentFile.name.split('.')[0];
+      const category = document.getElementById('uploadCategory').value;
+
+      alert(`✅ Asset Uploaded Successfully!\n\nName: ${customName}\nCategory: ${category}\n\n(Frontend Demo - will be saved when backend is connected)`);
+      
       hideUploadModal();
     }
 
