@@ -5,17 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VerseKit • Community Assets</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Added Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+    
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .asset-card { transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
-    .asset-card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.2); }
-    .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-    .modal-animate { animation: modalFadeIn 0.3s ease-out; }
-    @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    
+    .asset-card {
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .asset-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.2);
+    }
+    .glass {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .modal-animate {
+      animation: modalFade In 0.3s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body class="bg-[#05070a] text-gray-200 min-h-screen flex flex-col">
@@ -30,7 +44,7 @@
             </div>
             <h1 class="text-4xl font-extrabold tracking-tight text-white">VerseKit</h1>
         </div>
-        <p class="text-gray-400 text-lg">assets hub for<span class="text-emerald-400">Verse Ecosystem</span></p>
+        <p class="text-gray-400 text-lg">The central repository for <span class="text-emerald-400">Verse Ecosystem</span> creative assets.</p>
       </div>
       
       <button onclick="showUploadModal()" 
@@ -53,15 +67,41 @@
             <option value="logo">Logos</option>
             <option value="banner">Banners</option>
             <option value="template">Templates</option>
-            <option value="social">fonts</option>
+            <option value="social">Social Kits</option>
           </select>
+          <button class="bg-gray-900/50 border border-gray-800 rounded-2xl px-6 py-5 hover:bg-gray-800 transition-colors">
+            <i class="fas fa-sliders-h"></i>
+          </button>
       </div>
     </div>
 
     <div id="assetGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        <!-- Live Cards injected here -->
+        <!-- Cards injected here -->
     </div>
   </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-950/50 border-t border-gray-900 py-12 mt-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
+        <div class="text-center md:text-left">
+          <p class="text-white font-bold text-xl tracking-tight">VerseKit</p>
+          <p class="text-gray-500 mt-2 italic text-sm">Empowering community-led branding.</p>
+        </div>
+
+        <div class="flex justify-center gap-6">
+          <a href="#" class="h-12 w-12 rounded-full border border-gray-800 flex items-center justify-center hover:bg-emerald-600 hover:border-emerald-600 hover:text-white transition-all"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="h-12 w-12 rounded-full border border-gray-800 flex items-center justify-center hover:bg-emerald-600 hover:border-emerald-600 hover:text-white transition-all"><i class="fab fa-discord"></i></a>
+          <a href="#" class="h-12 w-12 rounded-full border border-gray-800 flex items-center justify-center hover:bg-emerald-600 hover:border-emerald-600 hover:text-white transition-all"><i class="fab fa-github"></i></a>
+        </div>
+
+        <div class="text-center md:text-right text-gray-500 text-sm">
+          &copy; 2026 Verse Ecosystem <br>
+          <span class="text-xs text-gray-700">Abuja, Nigeria • Built for the web</span>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <!-- Upload Modal -->
   <div id="uploadModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -82,19 +122,19 @@
                 <option value="logo">Logo</option>
                 <option value="banner">Banner</option>
                 <option value="template">Template</option>
-                <option value="social">fonts</option>
+                <option value="social">Social Kit</option>
               </select>
           </div>
       </div>
       
-      <input type="file" id="fileInput" class="hidden" accept="image/*">
+      <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.zip">
       
       <div id="dropZone" class="group border-2 border-dashed border-gray-700 hover:border-emerald-500/50 rounded-3xl p-10 text-center cursor-pointer transition-all bg-gray-950/30">
         <i class="fas fa-cloud-arrow-up text-5xl text-gray-600 mb-4 group-hover:text-emerald-500 transition-colors"></i>
         <p class="text-gray-400 group-hover:text-gray-200">Drag files here or <span class="text-emerald-500">browse</span></p>
       </div>
 
-      <div id="previewArea" class="hidden mt-6">
+      <div id="previewArea" class="hidden mt-6 animate-pulse">
         <div class="flex items-center gap-4 bg-gray-800/50 p-4 rounded-2xl border border-gray-700">
             <img id="previewImage" class="h-16 w-16 rounded-lg object-cover bg-gray-900">
             <div class="flex-1 min-w-0">
@@ -108,49 +148,35 @@
         <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden">
           <div id="progressBar" class="h-full bg-emerald-500 w-0 transition-all"></div>
         </div>
-        <p id="progressText" class="text-xs text-center text-gray-500 mt-3 font-mono uppercase tracking-tighter">Initializing...</p>
+        <p id="progressText" class="text-xs text-center text-gray-500 mt-3 font-mono">UPLOADING_BUFFER: 0%</p>
       </div>
 
       <div class="flex gap-4 mt-10">
-        <button onclick="startUpload()" id="uploadBtn" class="flex-1 py-5 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-900/10 disabled:opacity-50">Publish to Community</button>
+        <button onclick="startUpload()" id="uploadBtn" class="flex-1 py-5 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-bold transition-all shadow-lg shadow-emerald-900/10">Publish to Community</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- SUPABASE CONFIG ---
-    const SUPABASE_URL = 'https://pibnmulaxqixmyjemeh.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpYm5tdWxheHFpeG15anllbWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4ODk4NTYsImV4cCI6MjA5MzQ2NTg1Nn0.DqzFO4Z7IYUXxGb3D8n7hKfLjYcmYg2SQJfghlqmiSw';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let assets = [
+      { id: 1, title: "Verse Primary Logo", category: "logo", type: "PNG + SVG", size: "2.4 MB", img: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=800&q=80" },
+      { id: 2, title: "Glass Morphism Kit", category: "template", type: "FIGMA", size: "18.1 MB", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" },
+      { id: 3, title: "Twitter Header Pack", category: "banner", type: "JPG", size: "12 MB", img: "https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?auto=format&fit=crop&w=800&q=80" },
+      { id: 4, title: "Dark Brand Guidelines", category: "social", type: "PDF", size: "5.5 MB", img: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80" },
+    ];
 
-    let assets = [];
     let currentFile = null;
-
-    // --- FETCH LIVE DATA ---
-    async function fetchAssets() {
-        const grid = document.getElementById('assetGrid');
-        grid.innerHTML = `<div class="col-span-full py-20 text-center animate-pulse text-gray-500">Fetching Verse Ecosystem...</div>`;
-        
-        const { data, error } = await supabaseClient
-            .from('assets')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        if (error) {
-            console.error(error);
-            grid.innerHTML = `<div class="col-span-full py-20 text-center text-red-500 font-mono">CONNECTION_FAILURE: CHECK_PROJECT_STATUS</div>`;
-        } else {
-            assets = data;
-            renderAssets(assets);
-        }
-    }
 
     function renderAssets(filteredAssets) {
       const grid = document.getElementById('assetGrid');
       grid.innerHTML = '';
 
       if (filteredAssets.length === 0) {
-        grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-24 opacity-50"><p class="text-gray-400">No assets found</p></div>`;
+        grid.innerHTML = `
+            <div class="col-span-full flex flex-col items-center justify-center py-24 opacity-50">
+                <i class="fas fa-search text-6xl mb-4 text-gray-800"></i>
+                <p class="text-gray-400 text-xl font-medium">No assets match your search</p>
+            </div>`;
         return;
       }
 
@@ -159,7 +185,7 @@
         card.className = 'asset-card glass rounded-[2rem] overflow-hidden flex flex-col h-full';
         card.innerHTML = `
           <div class="relative group overflow-hidden h-56">
-            <img src="${asset.img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/600x400/111/333?text=Asset'">
+            <img src="${asset.img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-gradient-to-t from-gray-950 to-transparent opacity-60"></div>
             <span class="absolute top-4 left-4 bg-gray-900/80 backdrop-blur-md text-emerald-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-white/5">
                 ${asset.category}
@@ -172,12 +198,13 @@
                 <span class="h-1 w-1 rounded-full bg-gray-700"></span>
                 <span>${asset.size}</span>
             </div>
+            
             <div class="mt-auto pt-8 flex gap-3">
-                <a href="${asset.img}" download="${asset.title}" target="_blank"
+                <button onclick="downloadAsset('${asset.title}')" 
                         class="flex-1 py-4 bg-white/5 hover:bg-emerald-600 hover:text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 border border-white/5">
                   <i class="fas fa-download"></i> Get
-                </a>
-                <button onclick="copyLink('${asset.img}')" 
+                </button>
+                <button onclick="copyLink('${asset.id}')" title="Copy Link"
                         class="px-5 py-4 bg-white/5 hover:bg-white/10 rounded-xl text-sm transition-all border border-white/5 text-gray-400">
                   <i class="fas fa-link"></i>
                 </button>
@@ -188,115 +215,110 @@
       });
     }
 
-    // --- UPLOAD CORE ---
-    async function startUpload() {
+    function copyLink(id) {
+        alert("Link copied to clipboard! (Simulated)");
+    }
+
+    function downloadAsset(filename) {
+      alert(`Preparing ${filename} for secure download...`);
+    }
+
+    // Modal & Upload Logic
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    function showUploadModal() {
+      document.getElementById('uploadModal').classList.remove('hidden');
+    }
+
+    function hideUploadModal() {
+      document.getElementById('uploadModal').classList.add('hidden');
+      resetModal();
+    }
+
+    function resetModal() {
+      currentFile = null;
+      document.getElementById('previewArea').classList.add('hidden');
+      document.getElementById('progressContainer').classList.add('hidden');
+      document.getElementById('uploadBtn').disabled = false;
+      document.getElementById('modalTitle').value = '';
+    }
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+    function handleFiles(files) {
+      if (files.length > 0) {
+        currentFile = files[0];
+        document.getElementById('fileName').textContent = currentFile.name;
+        document.getElementById('modalTitle').value = currentFile.name.split('.')[0];
+        document.getElementById('previewArea').classList.remove('hidden');
+
+        if (currentFile.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = e => document.getElementById('previewImage').src = e.target.result;
+          reader.readAsDataURL(currentFile);
+        } else {
+          document.getElementById('previewImage').src = "https://cdn-icons-png.flaticon.com/512/3917/3917361.png"; // File icon
+        }
+      }
+    }
+
+    function startUpload() {
       if (!currentFile) return alert("Select a file first!");
       
-      const title = document.getElementById('modalTitle').value || "Unnamed Asset";
+      const title = document.getElementById('modalTitle').value;
       const category = document.getElementById('modalCategory').value;
       const uploadBtn = document.getElementById('uploadBtn');
       const progressContainer = document.getElementById('progressContainer');
-      const progressBar = document.getElementById('progressBar');
-      const progressText = document.getElementById('progressText');
       
       uploadBtn.disabled = true;
       progressContainer.classList.remove('hidden');
 
-      try {
-          // 1. Upload to Storage
-          progressText.textContent = "UPLOADING_TO_CLOUD...";
-          progressBar.style.width = '40%';
-          
-          const fileExt = currentFile.name.split('.').pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 5;
+        document.getElementById('progressBar').style.width = progress + '%';
+        document.getElementById('progressText').textContent = `SYNCING_ASSET: ${progress}%`;
 
-          const { data: storageData, error: storageError } = await supabaseClient.storage
-              .from('assets-bucket')
-              .upload(fileName, currentFile);
-
-          if (storageError) throw storageError;
-
-          // 2. Get Public Link
-          progressBar.style.width = '70%';
-          progressText.textContent = "GENERATING_PUBLIC_LINK...";
-          const { data: { publicUrl } } = supabaseClient.storage.from('assets-bucket').getPublicUrl(fileName);
-
-          // 3. Save to DB
-          progressBar.style.width = '90%';
-          progressText.textContent = "FINALIZING_METADATA...";
-          const { error: dbError } = await supabaseClient.from('assets').insert([{
-              title: title,
-              category: category,
-              type: fileExt.toUpperCase(),
-              size: (currentFile.size / (1024 * 1024)).toFixed(1) + " MB",
-              img: publicUrl
-          }]);
-
-          if (dbError) throw dbError;
-
-          progressBar.style.width = '100%';
-          progressText.textContent = "COMPLETE!";
-          
-          setTimeout(() => {
-              fetchAssets();
-              hideUploadModal();
-          }, 800);
-
-      } catch (err) {
-          console.error(err);
-          alert("Error: " + err.message);
-          uploadBtn.disabled = false;
-      }
-    }
-
-    // --- HELPERS ---
-    function copyLink(url) {
-        navigator.clipboard.writeText(url);
-        alert("Public link copied to clipboard!");
-    }
-
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-
-    function showUploadModal() { document.getElementById('uploadModal').classList.remove('hidden'); }
-    function hideUploadModal() { 
-        document.getElementById('uploadModal').classList.add('hidden'); 
-        resetModal();
-    }
-    function resetModal() {
-        currentFile = null;
-        document.getElementById('previewArea').classList.add('hidden');
-        document.getElementById('progressContainer').classList.add('hidden');
-        document.getElementById('uploadBtn').disabled = false;
-        document.getElementById('progressBar').style.width = '0%';
-    }
-
-    dropZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', e => {
-        if (e.target.files.length > 0) {
-            currentFile = e.target.files[0];
-            document.getElementById('fileName').textContent = currentFile.name;
-            document.getElementById('modalTitle').value = currentFile.name.split('.')[0];
-            document.getElementById('previewArea').classList.remove('hidden');
-            if (currentFile.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = e => document.getElementById('previewImage').src = e.target.result;
-                reader.readAsDataURL(currentFile);
-            }
+        if (progress >= 100) {
+          clearInterval(interval);
+          finishUpload(title, category);
         }
-    });
+      }, 50);
+    }
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        renderAssets(assets.filter(a => a.title.toLowerCase().includes(term)));
-    });
+    function finishUpload(title, category) {
+      const newAsset = {
+        id: Date.now(),
+        title: title || "Unnamed Asset",
+        category: category,
+        type: currentFile.name.split('.').pop().toUpperCase(),
+        size: (currentFile.size / (1024 * 1024)).toFixed(1) + " MB",
+        img: currentFile.type.startsWith('image/') ? URL.createObjectURL(currentFile) : "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80"
+      };
 
-    document.getElementById('categoryFilter').addEventListener('change', (e) => {
-        const cat = e.target.value;
-        renderAssets(cat ? assets.filter(a => a.category === cat) : assets);
-    });
+      assets.unshift(newAsset);
+      renderAssets(assets);
+      setTimeout(() => {
+        hideUploadModal();
+      }, 500);
+    }
 
-    fetchAssets();
+    function filterAssets() {
+      const term = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cat = document.getElementById('categoryFilter').value;
+
+      const filtered = assets.filter(a => 
+        (!term || a.title.toLowerCase().includes(term)) && (!cat || a.category === cat)
+      );
+      renderAssets(filtered);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterAssets);
+    document.getElementById('categoryFilter').addEventListener('change', filterAssets);
+
+    renderAssets(assets);
   </script>
 </body>
 </html>
